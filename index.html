@@ -9,7 +9,7 @@ body{background:#f4f7fb}.hero{background:linear-gradient(135deg,#030712,#052e16,
   border-radius:14px;
 }
 .ranking-table{
-  min-width:760px;
+  min-width:620px;
   margin-bottom:0;
 }
 .ranking-table th,
@@ -22,25 +22,19 @@ body{background:#f4f7fb}.hero{background:linear-gradient(135deg,#030712,#052e16,
   left:0;
   z-index:2;
   background:#fff;
-  min-width:52px;
+  min-width:42px;
+  width:42px;
+  text-align:center;
 }
 .ranking-table thead .pos-col{
   background:#f8fafc;
   z-index:4;
 }
 .ranking-table .name-col{
-  position:sticky;
-  left:52px;
-  z-index:2;
-  background:#fff;
-  min-width:150px;
-  max-width:170px;
+  min-width:118px;
+  max-width:150px;
   white-space:normal;
   line-height:1.1;
-}
-.ranking-table thead .name-col{
-  background:#f8fafc;
-  z-index:4;
 }
 .ranking-hint{
   display:none;
@@ -48,22 +42,29 @@ body{background:#f4f7fb}.hero{background:linear-gradient(135deg,#030712,#052e16,
   font-size:.82rem;
   margin-bottom:8px;
 }
+.ranking-legend{
+  display:none;
+  color:#667085;
+  font-size:.78rem;
+  margin-bottom:8px;
+}
 @media(max-width:767px){
-  .ranking-hint{display:block}
+  .ranking-hint,
+  .ranking-legend{display:block}
   .ranking-table{
-    min-width:680px;
-    font-size:.82rem;
+    min-width:560px;
+    font-size:.78rem;
   }
   .ranking-table .score{
-    font-size:1.35rem;
+    font-size:1.2rem;
   }
   .ranking-table th,
   .ranking-table td{
-    padding:.45rem .5rem;
+    padding:.42rem .38rem;
   }
   .ranking-table .name-col{
-    min-width:132px;
-    max-width:132px;
+    min-width:104px;
+    max-width:118px;
   }
 }
 
@@ -78,7 +79,7 @@ function cnt(a){let m=new Map;a.forEach(v=>{v=(v||"").trim();if(!v)return;let k=
 function stat(title,a){let c=cnt(a);return `<div class="col-lg-4"><div class="stat"><h3 class="h5">${title}</h3>${c.length?`<ul class="list-unstyled">${c.map(x=>`<li class="d-flex justify-content-between border-bottom py-1"><span>${esc(x.label)}</span><b>${x.count}</b></li>`).join("")}</ul>`:"<p class='small-muted'>Nessun dato</p>"}</div></div>`}
 function byGroup(p){let o={};(p||[]).forEach(x=>{(o[x.girone]??=[]).push(x)});return o}
 function scoreName(d,n){return (d.ranking||[]).find(r=>norm(r.name)===norm(n))}
-function render(d){$("status").style.display="none";let r=d.ranking||[],s=d.submissions||[];podium.innerHTML=r.length?`<div class="row g-3">${r.slice(0,3).map((x,i)=>`<div class="col-md-4"><div class="podium text-center ${i==0?'first':''}"><div class="display-6">${i==0?'🥇':i==1?'🥈':'🥉'}</div><h3>${esc(x.name)}</h3><div class="score">${x.total}</div><div class="small-muted">punti</div></div></div>`).join("")}</div>`:"";ranking.innerHTML=r.length?`<div class="ranking-hint">Scorri la tabella verso destra per vedere tutti i dettagli →</div><div class="ranking-scroll"><table class="table table-striped align-middle ranking-table"><thead><tr><th class="pos-col">Pos.</th><th class="name-col">Nome</th><th>Totale</th><th>Partite</th><th>Marcatori</th><th>Assist</th><th>MVP</th><th>Bonus</th><th>Podio</th></tr></thead><tbody>${r.map((x,i)=>`<tr><td class="pos-col"><strong>${i+1}</strong></td><td class="name-col"><strong>${esc(x.name)}</strong></td><td class="score">${x.total}</td><td>${x.breakdown?.matches||0}</td><td>${x.breakdown?.scorers||0}</td><td>${x.breakdown?.assists||0}</td><td>${x.breakdown?.mvps||0}</td><td>${x.breakdown?.bonuses||0}</td><td>${x.breakdown?.podium||0}</td></tr>`).join("")}</tbody></table></div>`:"<p>Classifica non disponibile.</p>";stats.innerHTML=stat("Nazioni più scelte vincenti",s.map(x=>x.torneo?.vincitore))+stat("Finaliste più scelte",s.map(x=>x.torneo?.secondo))+stat("Terzi posti più scelti",s.map(x=>x.torneo?.terzo))+stat("Marcatori più scelti",s.flatMap(x=>x.torneo?.marcatori||[]))+stat("Assist man più scelti",s.flatMap(x=>x.torneo?.assistMan||[]))+stat("MVP più scelti",s.flatMap(x=>x.torneo?.mvp||[]));profiles.innerHTML=s.map((x,i)=>profile(d,x,i)).join("")||"<p>Nessuna scheda.</p>";let o=d.official||{};official.innerHTML=`<div class="row g-3"><div class="col-md-4"><b>Vincitore:</b> ${esc(o.winner||"-")}</div><div class="col-md-4"><b>Secondo:</b> ${esc(o.second||"-")}</div><div class="col-md-4"><b>Terzo:</b> ${esc(o.third||"-")}</div><div class="col-md-4"><b>Capocannoniere:</b> ${esc(o.topScorer||"-")}</div><div class="col-md-4"><b>Miglior assist man:</b> ${esc(o.topAssist||"-")}</div><div class="col-md-4"><b>MVP:</b> ${esc(o.mvp||"-")}</div></div>`;matches.innerHTML=`<table class="table table-striped"><tbody>${(d.matches||[]).map(m=>`<tr><td>${esc(m.group)}</td><td>${esc(m.home)} vs ${esc(m.away)}</td><td><b>${m.homeGoals!==""&&m.awayGoals!==""?esc(m.homeGoals+"-"+m.awayGoals):"-"}</b></td></tr>`).join("")}</tbody></table>`}
+function render(d){$("status").style.display="none";let r=d.ranking||[],s=d.submissions||[];podium.innerHTML=r.length?`<div class="row g-3">${r.slice(0,3).map((x,i)=>`<div class="col-md-4"><div class="podium text-center ${i==0?'first':''}"><div class="display-6">${i==0?'🥇':i==1?'🥈':'🥉'}</div><h3>${esc(x.name)}</h3><div class="score">${x.total}</div><div class="small-muted">punti</div></div></div>`).join("")}</div>`:"";ranking.innerHTML=r.length?`<div class="ranking-hint">Scorri la tabella verso destra per vedere tutti i dettagli →</div><div class="ranking-legend">P = Partite · M = Marcatori · A = Assist · B = Bonus · Pod = Podio</div><div class="ranking-scroll"><table class="table table-striped align-middle ranking-table"><thead><tr><th class="pos-col">#</th><th class="name-col">Nome</th><th>Tot</th><th>P</th><th>M</th><th>A</th><th>MVP</th><th>B</th><th>Pod</th></tr></thead><tbody>${r.map((x,i)=>`<tr><td class="pos-col"><strong>${i+1}</strong></td><td class="name-col"><strong>${esc(x.name)}</strong></td><td class="score">${x.total}</td><td>${x.breakdown?.matches||0}</td><td>${x.breakdown?.scorers||0}</td><td>${x.breakdown?.assists||0}</td><td>${x.breakdown?.mvps||0}</td><td>${x.breakdown?.bonuses||0}</td><td>${x.breakdown?.podium||0}</td></tr>`).join("")}</tbody></table></div>`:"<p>Classifica non disponibile.</p>";stats.innerHTML=stat("Nazioni più scelte vincenti",s.map(x=>x.torneo?.vincitore))+stat("Finaliste più scelte",s.map(x=>x.torneo?.secondo))+stat("Terzi posti più scelti",s.map(x=>x.torneo?.terzo))+stat("Marcatori più scelti",s.flatMap(x=>x.torneo?.marcatori||[]))+stat("Assist man più scelti",s.flatMap(x=>x.torneo?.assistMan||[]))+stat("MVP più scelti",s.flatMap(x=>x.torneo?.mvp||[]));profiles.innerHTML=s.map((x,i)=>profile(d,x,i)).join("")||"<p>Nessuna scheda.</p>";let o=d.official||{};official.innerHTML=`<div class="row g-3"><div class="col-md-4"><b>Vincitore:</b> ${esc(o.winner||"-")}</div><div class="col-md-4"><b>Secondo:</b> ${esc(o.second||"-")}</div><div class="col-md-4"><b>Terzo:</b> ${esc(o.third||"-")}</div><div class="col-md-4"><b>Capocannoniere:</b> ${esc(o.topScorer||"-")}</div><div class="col-md-4"><b>Miglior assist man:</b> ${esc(o.topAssist||"-")}</div><div class="col-md-4"><b>MVP:</b> ${esc(o.mvp||"-")}</div></div>`;matches.innerHTML=`<table class="table table-striped"><tbody>${(d.matches||[]).map(m=>`<tr><td>${esc(m.group)}</td><td>${esc(m.home)} vs ${esc(m.away)}</td><td><b>${m.homeGoals!==""&&m.awayGoals!==""?esc(m.homeGoals+"-"+m.awayGoals):"-"}</b></td></tr>`).join("")}</tbody></table>`}
 function profile(d,s,i){let name=s.partecipante?.nome||"Senza nome",sc=scoreName(d,name),g=byGroup(s.partite||[]),t=s.torneo||{};let games=Object.keys(g).sort().map(k=>`<h5>Girone ${esc(k)}</h5><table class="table table-sm table-striped"><tbody>${g[k].map(p=>`<tr><td>${esc(p.partita||p.casa+" vs "+p.trasferta)}</td><td><b>${esc(p.esito||"-")}</b></td><td>${esc(p.goalNoGoal||"-")}</td><td>${esc(p.overUnder25||"-")}</td></tr>`).join("")}</tbody></table>`).join("");return `<div class="accordion mb-2 profile" data-name="${esc(name.toLowerCase())}"><div class="accordion-item"><h2 class="accordion-header"><button class="accordion-button collapsed" data-bs-toggle="collapse" data-bs-target="#p${i}"><b>${esc(name)}</b>&nbsp;— ${sc?.total||0} punti</button></h2><div id="p${i}" class="accordion-collapse collapse"><div class="accordion-body"><h4>Pronostici torneo</h4><div class="mb-3"><span class="choice-pill"><b>Vincitore:</b> ${esc(t.vincitore||"-")}</span><span class="choice-pill"><b>Secondo:</b> ${esc(t.secondo||"-")}</span><span class="choice-pill"><b>Terzo:</b> ${esc(t.terzo||"-")}</span></div><div class="row"><div class="col-md-4"><h5>Marcatori</h5>${(t.marcatori||[]).map((x,j)=>`<div class="choice-pill">${j+1}. ${esc(x)}</div>`).join("")}</div><div class="col-md-4"><h5>Assist man</h5>${(t.assistMan||[]).map((x,j)=>`<div class="choice-pill">${j+1}. ${esc(x)}</div>`).join("")}</div><div class="col-md-4"><h5>MVP</h5>${(t.mvp||[]).map((x,j)=>`<div class="choice-pill">${j+1}. ${esc(x)}</div>`).join("")}</div></div><h4 class="mt-3">Partite</h4>${games}</div></div></div></div>`}
 search.oninput=e=>{let q=e.target.value.toLowerCase();document.querySelectorAll(".profile").forEach(el=>el.style.display=el.dataset.name.includes(q)?"":"none")};
 onSnapshot(liveRef,s=>{if(s.exists())render(s.data());else $("status").innerHTML="<div class='card-body text-center'><h2>Classifica in aggiornamento</h2><p>Risultati disponibili a breve.</p></div>"},e=>{$("status").innerHTML="<div class='card-body text-center'><h2>Classifica in aggiornamento</h2><p>Antonio sta aggiornando i risultati.</p></div>"});
